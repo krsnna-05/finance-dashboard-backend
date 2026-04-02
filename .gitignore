@@ -3,8 +3,5 @@ dist
 node_modules
 build
 context.md
-/src/generated/prisma
-
-/generated/prisma
-
-/generated/prisma
+generated/prisma
+assignment.txt

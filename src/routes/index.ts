@@ -1,0 +1,13 @@
+// src/routes/index.ts
+
+import { Router } from "express";
+import authRoutes from "../modules/auth/auth.route";
+import userRoutes from "../modules/users/user.route";
+
+const router = Router();
+
+// 🔹 Module routes
+router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
+
+export default router;
