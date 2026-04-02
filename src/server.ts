@@ -7,6 +7,22 @@ import { prisma } from "./lib/prisma";
 const PORT = config.port;
 const NODE_ENV = config.nodeEnv;
 
+const logEnvironmentVariables = (): void => {
+  const envSnapshot = {
+    PORT: process.env.PORT ?? String(PORT),
+    NODE_ENV,
+    PROD_URL: config.prodUrl,
+    DATABASE_URL: process.env.DATABASE_URL ? "[redacted]" : "[not set]",
+    JWT_SECRET: process.env.JWT_SECRET ? "[redacted]" : "[not set]",
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? "7d",
+  };
+
+  console.log("Environment variables:");
+  for (const [key, value] of Object.entries(envSnapshot)) {
+    console.log(`${key}: ${value}`);
+  }
+};
+
 /**
  * Verify database connection before starting the server
  */
@@ -25,6 +41,8 @@ const verifyDatabaseConnection = async (): Promise<void> => {
 // start server function
 const startServer = async (): Promise<void> => {
   try {
+    logEnvironmentVariables();
+
     // 🔹 Verify database connection
     await verifyDatabaseConnection();
 

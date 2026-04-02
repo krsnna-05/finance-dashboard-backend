@@ -1,5 +1,11 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import { Options } from "swagger-jsdoc";
+import config from "../config/env";
+
+const serverUrl =
+  config.nodeEnv === "prod"
+    ? config.prodUrl.replace(/\/$/, "")
+    : `http://localhost:${config.port}`;
 
 const options: Options = {
   definition: {
@@ -11,7 +17,7 @@ const options: Options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: serverUrl,
       },
     ],
     components: {
