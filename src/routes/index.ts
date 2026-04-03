@@ -2,6 +2,7 @@
 
 import { Router } from "express";
 import authRoutes from "../modules/auth/auth.route";
+import transactionRoutes from "../modules/transactions/transaction.route";
 import userRoutes from "../modules/users/user.route";
 
 const router = Router();
@@ -9,5 +10,6 @@ const router = Router();
 // 🔹 Module routes
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
+router.use("/transactions", transactionRoutes);
 
 export default router;
