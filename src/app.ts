@@ -30,7 +30,7 @@ app.get("/", (_req, res) => {
   res.status(200).json({
     status: "OK",
     message: "Finance Dashboard API running 🚀",
-    docs: "/api/docs",
+    docs: "/api-docs",
   });
 });
 

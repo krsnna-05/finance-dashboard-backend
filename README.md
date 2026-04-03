@@ -1,191 +1,235 @@
 # Finance Dashboard Backend
 
-Backend API for a finance dashboard system built as an internship-style backend assessment. The project focuses on role-based access control, user management, validation, database-backed persistence, and Swagger documentation.
+Backend API for a finance dashboard system built as an internship assessment project. The implementation focuses on clean backend architecture, role-based access control, reliable validation/error handling, and practical data processing APIs.
 
 ## Overview
 
-This repository demonstrates backend engineering fundamentals for a finance dashboard scenario. The current implementation focuses on:
+This project implements a finance backend where users operate with role-based permissions.
 
-- JWT-based authentication for login
-- Admin-only user management
-- Search and filtering for users by email, role, and active status
-- Role-based access control middleware
-- Validation with Zod
-- Prisma + PostgreSQL persistence
+Roles:
+
+- ADMIN: full access (users + transactions + insights)
+- ANALYST: read transactions + insights
+- VIEWER: read insights only
+
+Core implementation includes:
+
+- JWT login authentication
+- User management (admin-only)
+- Transaction CRUD with filtering and pagination
+- Dashboard insights and trend analytics
+- Centralized error handling and Zod validation
 - Swagger API documentation
-- Seed script for an initial admin user
-
-The project is intentionally kept small and clean so it is easy to review, test, and extend.
+- PostgreSQL persistence using Prisma
 
 ## Tech Stack
 
 - Node.js
 - Express.js
 - TypeScript
-- PostgreSQL
+- PostgreSQL (NeonDB)
 - Prisma ORM
 - Zod
 - JWT
-- Swagger / swagger-jsdoc / swagger-ui-express
+- Swagger (swagger-jsdoc + swagger-ui-express)
 
-## Implemented Features
+## Live Project
 
-### Authentication
+Live URL :
 
-- `POST /api/auth/login`
-- JWT token generation
-- Inactive users are blocked from logging in
+## Assignment Coverage
 
-### User Management
-
-Admin-only user APIs:
-
-- `POST /api/users` - create user
-- `GET /api/users` - list users
-- `GET /api/users/:id` - get single user
-- `PATCH /api/users/:id` - update user
-- `DELETE /api/users/:id` - delete user
-
-User listing supports:
-
-- search by email
-- filter by role
-- filter by active status
-- pagination with `page` and `limit`
-
-### Security and Access Control
-
-- `authenticate` middleware validates JWT tokens
-- `authorize(["ADMIN"])` restricts user management endpoints to admins
-- Passwords are hashed with bcrypt
-- Passwords are never returned in API responses
-
-### Validation and Error Handling
-
-- Zod request validation for login and user CRUD
-- Centralized error middleware
-- Proper HTTP status codes for common cases such as invalid credentials, conflict, and not found
-
-### Documentation
-
-- Swagger UI available at `/api-docs`
-- Route-level Swagger comments for auth and user endpoints
-- Swagger server URL switches between localhost and production URL based on environment
-
-### Seed Data
-
-- `seed:admin` script creates or updates an admin user
-- Uses environment variables so the admin account can be configured easily
-
-## Assignment Status
-
-This project currently covers part of the internship assignment:
+### Core Requirements Status
 
 - User and role management: completed
+- Financial records management: completed
+- Dashboard summary APIs: completed
 - Access control logic: completed
 - Validation and error handling: completed
 - Data persistence: completed
-- Search support: completed for users
-- API documentation: completed for implemented routes
 
-Still remaining:
+### Optional Enhancements Status
 
-- Financial records management (transactions CRUD and filtering)
-- Dashboard summary / insight APIs
+- Authentication using tokens: completed
+- Pagination for record listing: completed
+- Search support: completed
+- API documentation: completed
+- Unit/integration tests: not implemented
+- Rate limiting: not implemented
 
-## Project Structure
+## Implemented Modules
 
-```bash
-src/
-	app.ts
-	server.ts
-	config/
-	docs/
-	lib/
-	middlewares/
-	modules/
-		auth/
-		users/
-	routes/
-	scripts/
-	types/
-prisma/
-```
+### Auth Module
 
-## API Documentation
+- POST /api/auth/login
 
-Swagger UI:
+Highlights:
 
-- Local: `http://localhost:3000/api-docs`
+- JWT token generation
+- Blocks inactive users from login
 
-## Setup
+### Users Module
 
-### 1. Install dependencies
+Admin-only endpoints:
 
-```bash
-npm install
-```
+- POST /api/users
+- GET /api/users
+- GET /api/users/:id
+- PATCH /api/users/:id
+- DELETE /api/users/:id
 
-### 2. Configure environment variables
+Query features on list endpoint:
 
-Create a `.env` file with:
+- email search (partial match)
+- filter by role
+- filter by isActive
+- pagination via page and limit
+
+### Transactions Module
+
+Endpoints:
+
+- POST /api/transactions (ADMIN)
+- GET /api/transactions (ADMIN, ANALYST)
+- GET /api/transactions/:id (ADMIN, ANALYST)
+- PATCH /api/transactions/:id (ADMIN)
+- DELETE /api/transactions/:id (ADMIN)
+
+Query features:
+
+- filter by userId
+- filter by type (income or expense)
+- filter by category (partial, case-insensitive)
+- filter by date range (startDate, endDate)
+- pagination via page and limit
+
+### Dashboard Module
+
+Endpoints:
+
+- GET /api/dashboard/summary (ADMIN, ANALYST, VIEWER)
+
+Returns:
+
+- total income
+- total expenses
+- net balance
+- category-wise totals
+- recent transactions
+- monthly trends
+
+Supports optional filters:
+
+- userId
+- startDate
+- endDate
+- months (trend window)
+
+## Security and Access Control
+
+- authenticate middleware validates bearer tokens
+- authorize middleware enforces role-level access
+- Passwords are hashed using bcrypt
+- Password fields are not exposed in API responses
+
+## Validation and Error Handling
+
+- Zod validation for body, params, and query inputs
+- Centralized Express error middleware
+- Proper HTTP status codes for auth, validation, and data errors
+- Prisma error cases normalized in middleware
+
+## Swagger API Docs
+
+- Swagger UI route: /api-docs
+- Includes auth, users, transactions, and dashboard routes
+- Swagger server URL auto-switches by environment:
+  - dev: http://localhost:\{PORT\}
+  - prod: PROD_URL from environment
+
+## Environment Variables
+
+Create a .env file:
 
 ```env
 PORT=3000
 NODE_ENV=dev
 DATABASE_URL=your_postgres_connection_string
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=1h
-PROD_URL=https://your-production-url.example.com
-ADMIN_EMAIL=admin@example.com
+PROD_URL=your_production_url
+```
+
+Optional variables for admin seed customization:
+
+```env
+ADMIN_EMAIL=admin@finance.local
 ADMIN_PASSWORD=Admin@12345
 ```
 
-### 3. Run Prisma generate + build
+## Setup and Run
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Build (includes prisma generate)
 
 ```bash
 npm run build
 ```
 
-### 4. Seed admin user
+3. Seed admin user
 
 ```bash
 npm run seed:admin
 ```
 
-### 5. Start development server
+4. Start dev server
 
 ```bash
 npm run dev
 ```
 
-## Available Scripts
+## Scripts
 
-- `npm run dev` - start the server in development
-- `npm run build` - generate Prisma client and compile TypeScript
-- `npm run seed:admin` - create or update the admin user
+- npm run dev
+- npm run build
+- npm run start
+- npm run seed:admin
 
-## Main API Routes
+## Project Structure
 
-- `POST /api/auth/login`
-- `POST /api/users`
-- `GET /api/users`
-- `GET /api/users/:id`
-- `PATCH /api/users/:id`
-- `DELETE /api/users/:id`
-
-## Assumptions
-
-- Admin users are seeded manually for local development and review.
-- The project currently focuses on user management before transaction and dashboard modules.
-- Search is performed at the database level through Prisma filters.
+```bash
+src/
+  app.ts
+  server.ts
+  config/
+  docs/
+  lib/
+  middlewares/
+    auth.middleware.ts
+    role.middleware.ts
+    error.middleware.ts
+  modules/
+    auth/
+    users/
+    transactions/
+    dashboard/
+  routes/
+  scripts/
+  types/
+prisma/
+```
 
 ## Notes for Reviewers
 
-If you are evaluating this as an assignment submission, the strongest parts of the current implementation are:
+This submission is designed to demonstrate backend engineering decisions clearly:
 
-- clear separation of routes, controllers, services, and validation
-- admin-only security for user management
-- database-backed search and filtering
-- Swagger documentation for reviewer usability
-- a seed script to make the project easy to test quickly
+- clean route-controller-service-validation separation
+- RBAC middleware over hardcoded controller checks
+- database-level filtering/search
+- aggregation-focused dashboard endpoint
+- reviewer-friendly setup with seed + Swagger
