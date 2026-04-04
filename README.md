@@ -35,7 +35,7 @@ Core implementation includes:
 
 ## Live Project
 
-Live URL :
+Live URL : https://finance-dashboard-backend-8wev.onrender.com/
 
 ## Assignment Coverage
 
@@ -167,6 +167,12 @@ ADMIN_EMAIL=admin@finance.local
 ADMIN_PASSWORD=Admin@12345
 ```
 
+Optional variable for assignment dataset seed:
+
+```env
+SEED_USER_PASSWORD=Test@12345
+```
+
 ## Setup and Run
 
 1. Install dependencies
@@ -187,6 +193,12 @@ npm run build
 npm run seed:admin
 ```
 
+Or seed assignment-ready dataset (users + transactions for trends/filters/role checks):
+
+```bash
+npm run seed:assignment
+```
+
 4. Start dev server
 
 ```bash
@@ -199,6 +211,19 @@ npm run dev
 - npm run build
 - npm run start
 - npm run seed:admin
+- npm run seed:assignment
+
+## Assignment Dataset Seed Details
+
+`npm run seed:assignment` creates a realistic and deterministic dataset for evaluation:
+
+- 11 users with mixed roles (ADMIN, ANALYST, VIEWER)
+- active and inactive users for access/status validation
+- 14 months of transactions for trend analytics
+- diverse income/expense categories for category summaries
+- enough volume for pagination and filtering checks
+
+Default seeded login password is controlled by `SEED_USER_PASSWORD` (falls back to `Test@12345`).
 
 ## Project Structure
 
